@@ -118,7 +118,7 @@
 			this.DIrValidate.Name = "DIrValidate";
 			this.DIrValidate.Size = new System.Drawing.Size(36, 23);
 			this.DIrValidate.TabIndex = 4;
-			this.DIrValidate.Text = "*";
+			this.DIrValidate.Text = "✔";
 			this.DIrValidate.UseVisualStyleBackColor = true;
 			this.DIrValidate.Click += new System.EventHandler(this.DirValidate_Click);
 			// 
@@ -171,8 +171,12 @@
 			// 
 			// FilePathDialog
 			// 
-			this.FilePathDialog.FileName = "File Path Dialog";
+			this.FilePathDialog.Title = "Choose File";
 			this.FilePathDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.FilePathDialog_FileOk);
+			// 
+			// BackupDirDialog
+			// 
+			this.BackupDirDialog.Description = "Choose Backup Directory";
 			// 
 			// BackupUtilityForm
 			// 

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -8,7 +6,7 @@ namespace Backup_Utility
 {
 	static class Backup
 	{
-		public static async void Run(Config config)
+		public static async Task<bool> Run(Config config)
 		{
 			DateTime lastTime = File.GetLastWriteTime(config.filePath);
 			string fileName = config.filePath.Substring(config.filePath.LastIndexOf('\\') + 1);
@@ -17,15 +15,33 @@ namespace Backup_Utility
 			fileName = fileName.Remove(fileName.LastIndexOf('.'));
 			string outPath = config.backupDir + '\\' + fileName;
 
+			int tryTime = 0;
+
 			while(true)
 			{
-				DateTime currTime = File.GetLastWriteTime(config.filePath);
-				if (currTime > lastTime)
+				try
 				{
-					lastTime = currTime;
-					File.Copy(config.filePath, outPath + TimeStamp(currTime) + ext);
+					tryTime = 0;
+
+					DateTime currTime = File.GetLastWriteTime(config.filePath);
+					if (currTime > lastTime)
+					{
+						lastTime = currTime;
+						File.Copy(config.filePath, outPath + TimeStamp(currTime) + ext);
+					}
+
+					await Task.Delay(config.delaySec * 10000);
+
 				}
-				await Task.Delay(config.delaySec * 10000);
+				catch (Exception)
+				{
+					tryTime++;
+
+					if (tryTime > 20)
+						return false;
+
+					await Task.Delay(tryTime * 10000);
+				}
 			}
 		}
 

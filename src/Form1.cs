@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Backup_Utility
 {
 	public partial class BackupUtilityForm : Form
 	{
+		bool running = false;
 		Config backupConfigs;
 
 		public BackupUtilityForm(string[] args)
@@ -20,7 +17,10 @@ namespace Backup_Utility
 			{
 				// If config exists run backup without graphics
 				if (IO.ReadConfig(out backupConfigs))
-					Backup.Run(backupConfigs);
+				{
+					running = true;
+					Run(true);
+				}
 			}
 			else
 			{ 
@@ -65,6 +65,7 @@ namespace Backup_Utility
 		private void ChooseBackupDir_Click(object sender, EventArgs e)
 		{
 			this.BackupDirDialog.ShowDialog();
+			this.DIrValidate.BackColor = Color.Yellow;
 		}
 
 		private void Start_Click(object sender, EventArgs e)
@@ -75,9 +76,14 @@ namespace Backup_Utility
 				return;
 			}
 
-			this.BackupButton.BackColor = Color.Green;
-			IO.CreateConfig(backupConfigs);
-			Backup.Run(backupConfigs);
+			if (running == false)
+			{
+				running = true;
+				this.BackupButton.BackColor = Color.Green;
+
+				IO.CreateConfig(backupConfigs);
+				Run(false);
+			}
 		}
 
 		private void FilePathDialog_FileOk(object sender, CancelEventArgs e)
@@ -90,6 +96,8 @@ namespace Backup_Utility
 
 		private void DirValidate_Click(object sender, EventArgs e)
 		{
+			this.DIrValidate.BackColor = Color.Green;
+
 			string name = BackupDirDialog.SelectedPath;
 			name = name.Trim();
 			this.BackupDirLabel.Text = name;
@@ -99,6 +107,19 @@ namespace Backup_Utility
 		private void DelayUpDown_ValueChanged(object sender, EventArgs e)
 		{
 			this.backupConfigs.delaySec = (int)DelayUpDown.Value;
+		}
+
+		private async void Run(bool noGraphics)
+		{
+			running = await Backup.Run(backupConfigs);
+
+			if (!running)
+			{
+				if (noGraphics)
+					Application.Exit();
+				else
+					this.BackupButton.BackColor = Color.Red;
+			}				
 		}
 	}
 }

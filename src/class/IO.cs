@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 
 namespace Backup_Utility
@@ -14,7 +11,7 @@ namespace Backup_Utility
 
 		public bool Valid()
 		{
-			return filePath != "" && backupDir != "" && delaySec > 0;
+			return (filePath != "" && filePath != null) && (backupDir != "" && backupDir != null) && delaySec > 0;
 		}
 	}
 
